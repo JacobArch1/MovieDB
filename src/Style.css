@@ -1,0 +1,308 @@
+.root{
+    -fx-background-color: #0d253f;
+    background-color: #0d253f;
+}
+
+.label{
+    -fx-text-fill:#ffffff;
+}
+
+/* TextField */
+.text-field{
+    -fx-background-radius: 0;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-text-fill: #ffffff;
+    -fx-min-height: 25;
+    min-height: 25;
+    -fx-pref-height: 29;
+}
+.text-field:hover{
+     -fx-border-color: #000000;
+     border-color: #000000;
+     -fx-background-color: #193350;
+     background-color: #193350;
+}
+.text-field:focused{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+
+/* ComboBox */
+.combo-box{
+    -fx-background-radius: 0;
+    -fx-border-insets: 0 0 -1 0;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-min-height: 25;
+    min-height: 25;
+    -fx-pref-height: 25;
+}
+.combo-box .list-cell:selected{
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.combo-box .list-cell:hover{
+    -fx-background-color:  #193350;
+    background-color:  #193350;
+}
+.combo-box:hover{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #193350;
+    background-color: #193350;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.combo-box:focused{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.combo-box-base > .arrow-button {
+    -fx-padding: 0 6;
+    padding: 0 6;
+}
+.combo-box-base > .arrow-button > .arrow {
+    -fx-background-color: #ffffff;
+    background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 2 4;
+    padding: 2 4;
+    -fx-shape: "M 0 0 H 7 L 3.5 4 z";
+}
+.combo-box .list-view{
+    -fx-background-radius: 0;
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-padding: 1;
+    padding: 1;
+}
+
+/* Button */
+.button{
+    -fx-background-radius: 0;
+    -fx-border-insets: 0 0 -1 0;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-text-fill: #ffffff;
+    -fx-min-height: 25;
+    min-height: 25;
+    -fx-pref-height: 28;
+}
+.button:focused{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.button:hover{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #193350;
+    background-color: #193350;
+    -fx-cursor: HAND;
+    cursor: HAND;
+ }
+.button:pressed{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+
+/* TextArea */
+.text-area{
+    -fx-background-radius: 0;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-highlight-fill: #193350;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.text-area:hover{
+    -fx-border-color: #000000;
+    border-color: #000000;
+}
+.text-area:focused{
+    -fx-border-color: #000000;
+    border-color: #000000;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.text-area .content{
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.text-area .scroll-bar{
+    -fx-background-insets: 0 -0.5 0.5 0;
+}
+.text-area .scroll-bar .thumb{
+    -fx-background-insets: 0 2 0 2;
+}
+
+/* ProgressBar */
+.progress-bar{
+    -fx-background-color: #193350;
+    background-color: #193350;
+    -fx-border-color: #000000;
+    border-color: #000000;
+}
+.progress-bar .bar{
+    -fx-background-color: #90cea1;
+    background-color: #90cea1;
+    -fx-background-radius: 0;
+    -fx-padding: 3;
+    padding: 3;
+    -fx-background-insets: 0;
+}
+.progress-bar .track {
+    -fx-background-color: #000000;
+    background-color: #000000;
+    -fx-background-radius: 0;
+}
+
+/* ProgressIndicator */
+.progress-bar .track {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-background-radius: 0;
+}
+
+.progress-indicator {
+    -fx-progress-color: #90cea1;
+}
+
+.progress-indicator .track {
+    -fx-background-color: #193350;
+    background-color: #193350;
+}
+
+.progress-indicator .text {
+    -fx-fill: #ffffff;
+    fill: #ffffff;
+}
+
+/* ScrollBar */
+.scroll-bar{
+    -fx-background-radius: 0;
+    -fx-background-color: #202e3f;
+    background-color: #202e3f;
+}
+.scroll-bar:vertical{
+    -fx-background-radius: 0;
+    -fx-background-color: #202e3f;
+    background-color: #202e3f;
+}
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button{
+    -fx-background-color: #90cea1;
+    background-color: #90cea1;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.scroll-bar .decrement-button,
+.scroll-bar .increment-button{
+    -fx-cursor: HAND;
+    cursor: HAND;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-background-radius: 0;
+}
+.scroll-bar .decrement-button:hover,
+.scroll-bar .increment-button:hover{
+    -fx-background-color: #193350;
+    background-color: #193350;
+}
+.scroll-bar:vertical  .increment-arrow,
+.scroll-bar:vertical  .decrement-arrow,
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow{
+    -fx-shape : " ";
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #90cea1;
+    background-color: #90cea1;
+    -fx-background-radius : 0;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+
+
+/* Menu */
+.menu-bar {
+    -fx-background-color: #0d253f;
+    background-color: #0d253f;
+    -fx-border-width: 0;
+    border-width: 0;
+}
+.menu-bar .menu-button{
+    -fx-background: #193350;
+    background: #193350;
+    -fx-text-fill: #ffffff;
+    -fx-min-height: 20;
+    min-height: 20;
+    -fx-pref-height: 50;
+    -fx-padding: 0 5 0 5;
+    padding: 0 5 0 5;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.menu-item{
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #031930;
+    background-color: #031930;
+}
+.menu-item:hover {
+    -fx-background-color: #193350;
+    background-color: #193350;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.menu-item:pressed {
+    -fx-background-color: #193350;
+    background-color: #193350;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.context-menu {
+    -fx-background-color: #031930;
+    background-color: #031930;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-padding: 0 0 -1 0;
+    padding: 0 0 -1 0;
+ }

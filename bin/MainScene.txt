@@ -1,0 +1,324 @@
+/*This class contains code for searching up TV shows as well as movies. However since movies and tv show id's are not
+unique among eachother there are some issues when adding them to the library."*/
+
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.*;
+import java.util.*;
+
+import java.net.HttpURLConnection;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import javafx.event.*;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+public class MainScene2 extends Login{
+    @FXML
+    private Label CastList, DetailedMovieTitle, MovieDesc, lblUsername;
+
+    @FXML
+    private ImageView DetailedMovieImage;
+
+    @FXML
+    public AnchorPane apLibrary, apSearch, apMovieDetails;
+
+    @FXML
+    private Button btnLibrary,btnLogout, btnSearch, btnAddToLibrary, btnRemoveFromLibrary;
+
+    @FXML
+    private TextField tfSearch;
+
+    @FXML
+    private HBox hbLibrary, hbSearchResults;
+
+    public void initialize() throws SQLException, IOException {
+        lblUsername.setText(Login.user.getUsername());
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "Password");
+    }
+
+    Connection con;
+    private AnchorPane current = apLibrary;
+    static List<Movie> searchResultsList = new ArrayList<>();
+    private Movie selected;
+
+    public void addMovies(HBox hBox, List<Movie> list) throws IOException{
+        for (int i = 0; i < list.size(); i++){
+            Movie movie = list.get(i);
+
+            ImageView imageView = new ImageView(movie.getImage());
+            imageView.setFitWidth(200);
+            imageView.setFitHeight(300);
+
+            Label label = new Label(movie.getTitle());
+            label.setFont(Font.font("Cambria", 13));
+            label.setTextFill(Color.WHITE);
+
+            VBox vbox = new VBox();
+            vbox.getChildren().addAll(imageView, label);
+            vbox.setPadding(new Insets(5));
+
+            imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    try {
+                        selected = movie;
+                        movieClicked(event, movie);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            hBox.getChildren().add(vbox);
+        }
+    }
+
+    @FXML
+    void movieClicked(MouseEvent event, Movie movie) throws SQLException {
+        apLibrary.setVisible(false);
+        apSearch.setVisible(false);
+        apMovieDetails.setVisible(true);
+
+        DetailedMovieTitle.setText(movie.getTitle() + " (" + movie.getReleaseDate() + ")");
+        CastList.setText("Cast: " + movie.getCast());
+        MovieDesc.setText(movie.getDescription());
+        Image image = new Image(movie.getImage());
+        DetailedMovieImage.setImage(image);
+
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("Select * From user_movie_list Where user_id = " + Login.user.getId()
+            + " AND movie_id = " + selected.getId() + " AND is_movie = " + selected.getIsMovie());
+        if(!rs.next()){
+            btnAddToLibrary.setVisible(true);
+        }
+        else{
+            btnRemoveFromLibrary.setVisible(true);
+        }
+    }
+
+    @FXML
+    void btnLibraryClicked(ActionEvent event) throws IOException, SQLException {
+        Login.user.myLibrary.clear();
+        Login.user.idList.clear();
+        apLibrary.setVisible(true);
+        apSearch.setVisible(false);
+        apMovieDetails.setVisible(false);
+        current = apLibrary;
+
+        searchResultsList.clear();
+
+        renderLibrary();
+    }
+
+    public void renderLibrary() throws SQLException, IOException{
+        current = apLibrary;
+        Login.user.myLibrary.clear();
+        Login.user.idList.clear();
+
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT movie_id FROM user_movie_list WHERE user_id = " + Login.user.getId());
+        while(rs.next()){
+            Login.user.idList.add(rs.getLong(1));
+        }
+
+        try {
+            for(int i = 0; i < Login.user.idList.size(); i++){
+                long id = Login.user.idList.get(i);
+                Boolean isMovie = false;
+                String url = "";
+                String searchResults = "";
+
+                ResultSet rs2 = stmt.executeQuery("SELECT is_movie FROM user_movie_list WHERE user_id = " + Login.user.getId());
+                while(rs2.next()){
+                    isMovie = (rs2.getBoolean(1));
+                }
+
+                if(isMovie){
+                    url = "https://api.themoviedb.org/3/movie/"+ id +"?api_key=489bc0e902b5137de4ef51427448ad16&language=en-US";
+                    searchResults = connectEndpoint(url);
+                }
+                else{
+                    url = "https://api.themoviedb.org/3/tv/"+ id +"?api_key=489bc0e902b5137de4ef51427448ad16&language=en-US";
+                    searchResults = connectEndpoint(url);
+                }
+
+                JSONParser parser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) parser.parse(searchResults);
+
+                String title = (String) jsonObject.get("title");
+                if (title == null){ title = (String) jsonObject.get("original_name"); }
+                String releaseDate = (String) jsonObject.get("release_date");
+                if (releaseDate == null){ releaseDate = (String) jsonObject.get("first_air_date"); }
+                String description = (String) jsonObject.get("overview");
+                String image = (String) jsonObject.get("poster_path");
+                double popularity = (double) jsonObject.get("popularity");
+                String cast = getCredits(id);
+
+                Movie movie = new Movie(id, title, releaseDate, description, image, cast, isMovie);
+                movie.setPopularity((int)popularity);
+                Login.user.myLibrary.add(movie);
+            }
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+        hbLibrary.getChildren().clear();
+        addMovies(hbLibrary, Login.user.myLibrary);
+    }
+
+    @FXML
+    void btnSearchClicked(ActionEvent event) throws Exception {
+        apSearch.setVisible(true);
+        apLibrary.setVisible(false);
+        apMovieDetails.setVisible(false);
+        btnAddToLibrary.setVisible(false);
+        btnRemoveFromLibrary.setVisible(false);
+        current = apSearch;
+
+        searchResultsList.clear();
+
+        try {
+            String query = tfSearch.getText();
+            query = query.replace(" ","%20");
+
+            String url = "https://api.themoviedb.org/3/search/movie?api_key=489bc0e902b5137de4ef51427448ad16&query=" + query;
+            String searchResults = connectEndpoint(url);
+            getData(searchResults);
+
+            url = "https://api.themoviedb.org/3/search/tv?api_key=489bc0e902b5137de4ef51427448ad16&query=" + query;
+            searchResults = connectEndpoint(url);
+
+            getData(searchResults);
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+        hbSearchResults.getChildren().clear();
+        Collections.sort(searchResultsList,Comparator.comparingInt(Movie::getPopularity).reversed());
+        addMovies(hbSearchResults, searchResultsList);
+
+    }
+    public static String connectEndpoint(String url) throws Exception{
+        URL endpointUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) endpointUrl.openConnection();
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            String response = "";
+
+            while ((inputLine = in.readLine()) != null) {
+                response += (inputLine);
+            }
+            in.close();
+
+            return response;
+
+        } else {
+            return "Error:" + responseCode;
+        }
+    }
+
+    public static void getData(String jsonString) throws Exception{
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+        Boolean isMovie = true;
+
+        JSONArray resultsArray = (JSONArray) jsonObject.get("results");
+        for (int i = 0; i < resultsArray.size(); i++) {
+            JSONObject movieObject = (JSONObject) resultsArray.get(i);
+            long id = (long) movieObject.get("id");
+            String title = (String) movieObject.get("title");
+            if (title == null){ title = (String) movieObject.get("original_name"); isMovie = false;}
+            String releaseDate = (String) movieObject.get("release_date");
+            if (releaseDate == null){ releaseDate = (String) movieObject.get("first_air_date"); isMovie = false;}
+            String description = (String) movieObject.get("overview");
+            String image = (String) movieObject.get("poster_path");
+            String cast = getCredits(id);
+            double popularity = (double) movieObject.get("popularity");
+
+            Movie movie = new Movie(id, title, releaseDate, description, image, cast, isMovie);
+            movie.setPopularity((int)popularity);
+            searchResultsList.add(movie);
+        }
+    }
+
+    public static String getCredits(long id) throws Exception{
+        String url = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=489bc0e902b5137de4ef51427448ad16";
+        String credits = connectEndpoint(url);
+        String cast = "";
+
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(credits);
+
+        JSONArray resultsArray = (JSONArray) jsonObject.get("cast");
+        for (int i = 0; i < Math.min(resultsArray.size(), 20); i++) {
+            JSONObject movieObject = (JSONObject) resultsArray.get(i);
+            String name = (String) movieObject.get("name");
+            cast += name + ", ";
+        }
+
+        return cast;
+    }
+
+    @FXML
+    void btnAddClicked() throws SQLException {
+        Statement stmt = con.createStatement();
+        stmt.execute("INSERT INTO user_movie_list (user_id, movie_id, is_movie) VALUES (" + Login.user.getId() + ","
+            + selected.getId() + "," + selected.getIsMovie() + ")");
+        btnAddToLibrary.setVisible(false);
+        btnRemoveFromLibrary.setVisible(true);
+    }
+
+    @FXML
+    void btnRemoveClicked() throws SQLException{
+        Statement stmt = con.createStatement();
+        stmt.execute("DELETE FROM user_movie_list WHERE user_id = (" + Login.user.getId() + ") AND movie_id = " + selected.getId());
+        btnRemoveFromLibrary.setVisible(false);
+        btnAddToLibrary.setVisible(true);
+        Login.user.myLibrary.clear();
+        Login.user.idList.clear();
+    }
+
+    @FXML
+    void btnBackClicked(ActionEvent event) throws SQLException, IOException {
+        hbLibrary.getChildren().clear();
+        if(current == apLibrary){
+            apLibrary.setVisible(true);
+            renderLibrary();
+        }
+        else{
+            apSearch.setVisible(true);
+        }
+        apMovieDetails.setVisible(false);
+        btnAddToLibrary.setVisible(false);
+        btnRemoveFromLibrary.setVisible(false);
+    }
+
+    @FXML
+    void btnLogout(ActionEvent event) {
+        Login.user.myLibrary.clear();
+        Login.user.idList.clear();
+        SceneController scene = new SceneController();
+        try {
+            scene.SwitchScenes(event, "Login.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
