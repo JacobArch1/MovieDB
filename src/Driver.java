@@ -13,6 +13,7 @@ public class Driver extends Application{
         primaryStage.setTitle("MovieDB Login");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        /*Hello There */
     }
 
     public static void main(String[] args) {
