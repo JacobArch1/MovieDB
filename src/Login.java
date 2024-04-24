@@ -9,6 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class Login {
+    String mySQLPassword = "pass";
     static User user = new User();
     SceneController scene = new SceneController();
 
@@ -26,7 +27,7 @@ public class Login {
 
     Connection con;
     public void initialize() throws SQLException, IOException {
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "pass");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", mySQLPassword);
     }
 
     @FXML

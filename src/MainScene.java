@@ -26,6 +26,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class MainScene extends Login{
+    String mySQLPassword = "pass";
+
     @FXML
     private Label DetailedMediaTitle, MediaOverview, MediaInfo, lblMenuTitle, lblLibraryTitle, DetailedPersonLabel, 
     PersonOverview, lblKnownFor, lblBdayDday;
@@ -69,7 +71,7 @@ public class MainScene extends Login{
     static String menuShowing = "";
 
     public void initialize() throws SQLException, IOException {
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", "pass");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "root", mySQLPassword);
 
         lblMenuTitle.setText("Movies Playing Now");
         paneStack.push(apMenuResults);
