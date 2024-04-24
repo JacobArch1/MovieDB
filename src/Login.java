@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 
 public class Login {
     String mySQLPassword = "pass";
+    
     static User user = new User();
     SceneController scene = new SceneController();
 
