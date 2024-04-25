@@ -15,7 +15,7 @@
             "name": "Driver",
             "request": "launch",
             "mainClass": "Driver",
-            "projectName": "MovieDB_e8a82a5b",
+            "projectName": "MovieDB_9ba0c0a8",
             "vmArgs": "--module-path \"lib/JavaFX/javafx-sdk-19.0.2.1/lib\" --add-modules javafx.controls,javafx.fxml"
         }
     ]
