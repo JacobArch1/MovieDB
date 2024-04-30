@@ -79,11 +79,6 @@
                               <MenuItem fx:id="miTVTopRated" mnemonicParsing="false" onAction="#miTVTopRatedClicked" text="Top Rated" />
                         </items>
                       </Menu>
-                      <Menu mnemonicParsing="false" text="People">
-                        <items>
-                          <MenuItem fx:id="miPeoplePopularPeople" mnemonicParsing="false" onAction="#miPeoplePopularPeopleClicked" text="Popular People        " />
-                        </items>
-                      </Menu>
                      </menus>
                   </MenuBar>
                </children>

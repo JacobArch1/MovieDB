@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.net.HttpURLConnection;
-//import java.net.URI;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import org.json.simple.JSONArray;
@@ -57,7 +56,7 @@ public class MainScene extends Login{
     private ScrollPane spSearch, spLibrary, spCast, spMenu, spRoles; 
 
     @FXML
-    private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming, miPeoplePopularPeople, 
+    private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming, 
     miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout, miSettings;
 
     Connection con;
@@ -190,13 +189,6 @@ public class MainScene extends Login{
         resetScroll();
         menuShowing = "";
 
-        String table = "user_tv_list";
-        String data = "tv_id";
-        if (selectedMedia.getisMovie() == true){
-            table = "user_movie_list";
-            data = "movie_id";
-        }
-
         DetailedMediaTitle.setText(media.getTitle());
         MediaOverview.setText(media.getDescription());
         MediaInfo.setText(media.getReleaseDate());
@@ -208,17 +200,7 @@ public class MainScene extends Login{
 
         hbCastList.getChildren().clear();
         addCastList(hbCastList, media.getCast());
-
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("Select * From " + table + " Where user_id = " + Login.user.getId()
-        + " AND " + data + " = " + selectedMedia.getId());
-        
-        if(!rs.next()){
-            btnAddToLibrary.setVisible(true);
-        }
-        else{
-            btnRemoveFromLibrary.setVisible(true);
-        }
+        ShowButton();
     }
 
     public void addCastList(HBox hBox, List<Person> castList) throws IOException{
@@ -345,17 +327,7 @@ public class MainScene extends Login{
         addMovies(vbLibrary, library);
     }
 
-    @FXML
-    void tfSearchEnterPressed(ActionEvent event) throws IOException {
-        search();
-    }
-
-    @FXML
-    void btnSearchClicked(MouseEvent  event) throws IOException {
-        search();
-    }
-
-    void search() throws IOException{
+    void search() throws IOException, SQLException{
         resetScroll();
         showPane(apSearch);
         btnAddToLibrary.setVisible(false);
@@ -612,16 +584,14 @@ public class MainScene extends Login{
         }
     }
 
-    void setMenu(String title, String MenuShowing, boolean isMovie, String link) throws Exception{
-        lblMenuTitle.setText(title);
-        menuShowing = MenuShowing;
-        menuisMovie = isMovie;
-        renderMenuResults(link);
+    @FXML
+    void tfSearchEnterPressed(ActionEvent event) throws IOException, SQLException {
+        search();
     }
 
     @FXML
-    void miPeoplePopularPeopleClicked(ActionEvent event) {
-
+    void btnSearchClicked(MouseEvent  event) throws IOException, SQLException {
+        search();
     }
 
     @FXML
@@ -643,8 +613,6 @@ public class MainScene extends Login{
                 }
             }
         }
-        btnAddToLibrary.setVisible(false);
-        btnRemoveFromLibrary.setVisible(false);
     }
 
     @FXML
@@ -663,16 +631,46 @@ public class MainScene extends Login{
         }
     }
 
-    void showPane(AnchorPane pane){
+    void ShowButton() throws SQLException {
+        String table = "user_movie_list";
+        String dataID = "movie_id";
+        if(selectedMedia.getisMovie() == false){
+            table = "user_tv_list";
+            dataID = "tv_id";
+        }
+
+        btnRemoveFromLibrary.setVisible(false);
+        btnAddToLibrary.setVisible(false);
+
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("Select * From " + table + " Where user_id = " + Login.user.getId()
+            + " AND " + dataID + " = " + selectedMedia.getId());
+        if(rs.next()){
+            btnRemoveFromLibrary.setVisible(true);
+        }
+        else{
+            btnAddToLibrary.setVisible(true);
+        }
+    }
+
+    void showPane(AnchorPane pane) throws SQLException{
         if (!paneStack.isEmpty() && paneStack.peek() != pane) {
             paneStack.push(pane);
         }
         apLibrary.setVisible(false); 
         apSearch.setVisible(false); 
-        apMovieDetails.setVisible(false); 
+        apMovieDetails.setVisible(false);
         apMenuResults.setVisible(false); 
+        if(pane == apMovieDetails){ShowButton();}
         apPersonDetails.setVisible(false);
         pane.setVisible(true);
+    }
+
+    void setMenu(String title, String MenuShowing, boolean isMovie, String link) throws Exception{
+        lblMenuTitle.setText(title);
+        menuShowing = MenuShowing;
+        menuisMovie = isMovie;
+        renderMenuResults(link);
     }
 
     void resetScroll(){
