@@ -282,11 +282,9 @@ public class MainScene extends Login{
         library.clear();
         Login.user.idList.clear();
 
-        //String query = "movie";
         String table = "user_movie_list";
         String dataID = "movie_id";
         if(isMovie == false){
-            //query = "tv";
             table = "user_tv_list";
             dataID = "tv_id";
         }
