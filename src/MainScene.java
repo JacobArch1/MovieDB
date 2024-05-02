@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +30,7 @@ public class MainScene extends Login{
 
     @FXML
     private Label DetailedMediaTitle, MediaOverview, MediaInfo, lblMenuTitle, lblLibraryTitle, DetailedPersonLabel, 
-    PersonOverview, lblKnownFor, lblBdayDday;
+    PersonOverview, lblKnownFor, lblBdayDday, lblTagline, lblDirandBud;
 
     @FXML
     private ImageView DetailedMovieImage, ImageBackdrop, DetailedPersonImage;
@@ -169,12 +170,10 @@ public class MainScene extends Login{
             VBox vbox = new VBox();
             vbox.getChildren().addAll(imageView, label1, label2);
             vbox.setPadding(new Insets(5));
-
             hBox.getChildren().add(vbox);
         }
     }
     
-
     @FXML
     void mediaClicked(MouseEvent event, Media media) throws SQLException, IOException {
         showPane(apMovieDetails);
@@ -183,7 +182,23 @@ public class MainScene extends Login{
 
         DetailedMediaTitle.setText(media.getTitle());
         MediaOverview.setText(media.getDescription());
-        MediaInfo.setText(media.getReleaseDate());
+        String movieDetails = media.getReleaseDate();
+        if (media.getGenres().size() > 0){ 
+            movieDetails += " • ";
+            for(int i = 0; i < media.getGenres().size(); i++){ 
+                if(i > 0) { movieDetails += ", ";}
+                movieDetails += media.getGenres().get(i); 
+            }
+        }
+        
+        if(media.getRuntime() != 0){ movieDetails += " • " + media.getRuntime() + " mins"; }
+        
+        MediaInfo.setText(movieDetails); 
+        lblTagline.setText(media.getTagline());
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        String formattedBudget = currencyFormat.format(media.getBudget());
+        lblDirandBud.setText("Director: " + media.getDirector() + "\nBudget: " + formattedBudget);
+        
         Image image = new Image(media.getImage());
         DetailedMovieImage.setImage(image);
         Image backImage = new Image(media.getBackImage());
@@ -405,12 +420,53 @@ public class MainScene extends Login{
 
             Media media = new Media(id, title, releaseDate, description, image, castList, isMovie, BackdropImage, score);
             media.setPopularity((int)popularity);
+            getExtraData(media);
             list.add(media);
         }
     }
 
     public static void getExtraData(Media media)throws Exception{
-        
+        String querySTR = "movie";
+        if(media.getisMovie() == false){
+            querySTR = "tv";
+        }
+        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId() + "?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String extraDetails = connectEndpoint(url);
+        JSONParser detailsResults = new JSONParser();
+        JSONObject detailsObject = (JSONObject) detailsResults.parse(extraDetails);
+
+        JSONArray genresArray = (JSONArray) detailsObject.get("genres");
+        String[] genres = new String[genresArray.size()];
+        for (int i = 0; i < genresArray.size(); i++) {
+            JSONObject genreObject = (JSONObject) genresArray.get(i);
+            genres[i] = (String) genreObject.get("name");
+        }
+        String tagline = (String) detailsObject.get("tagline");
+        if (tagline == null){ tagline = "No Tagline Available."; }
+        Long runtime = (Long) detailsObject.get("runtime");
+        if (runtime == null){ runtime = 0L; }
+        Long budget = (Long) detailsObject.get("budget");
+        if (budget == null){ budget = 0L; }
+
+        media.setGenres(Arrays.asList(genres));
+        media.setTagline(tagline);
+        media.setRuntime(runtime.intValue());
+        media.setBudget(budget);
+
+        url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId() + "/credits?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String credits = connectEndpoint(url);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(credits);
+        JSONArray resultsArray = (JSONArray) jsonObject.get("crew");
+        for (int i = 0; i < resultsArray.size(); i++) {
+            JSONObject movieObject = (JSONObject) resultsArray.get(i);
+            String job = (String) movieObject.get("job");
+            String name = (String) movieObject.get("name");
+            if(job.equals("Director")){
+                media.setDirector(name);
+                break;
+            }
+        }
     }
 
     public Person getPersonInfo(Person person) throws Exception{
@@ -481,6 +537,10 @@ public class MainScene extends Login{
 
         knownMedia = knownMedia.stream().distinct().collect(Collectors.toList());
         knownMedia.removeIf(media -> media.getDescription().equals("Self"));
+        knownMedia.removeIf(media -> media.getDescription().equals("Self - Guest"));
+        knownMedia.removeIf(media -> media.getDescription().equals("Self - Guest Judge"));
+        knownMedia.removeIf(media -> media.getDescription().equals("Guest"));
+        knownMedia.removeIf(media -> media.getDescription().equals("Self - Contestant"));
         Collections.sort(knownMedia,Comparator.comparingInt(Media::getPopularity).reversed());
         if(knownMedia.size() > 10){
             knownMedia = knownMedia.subList(0, 10);
@@ -500,9 +560,7 @@ public class MainScene extends Login{
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(credits);
         JSONArray resultsArray = (JSONArray) jsonObject.get("cast");
-
         List<Person> castList = new ArrayList<>();
-
         for (int i = 0; i < resultsArray.size(); i++) {
             JSONObject movieObject = (JSONObject) resultsArray.get(i);
             long pid = (long) movieObject.get("id");

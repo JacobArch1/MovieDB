@@ -5,13 +5,18 @@ import java.util.List;
 
 public class Media {
     private long id;
+    private long budget;
+    private long runtime;
     private String title;
     private String releaseDate;
     private String description;
     private String Image;
     private String BackdropImage;
+    private String tagline;
+    private String director;
     private double score;
     private List<Person> cast = new ArrayList<>();
+    private List<String> genres = new ArrayList<>();
     private boolean isMovie;
 
     int popularity;
@@ -52,6 +57,22 @@ public class Media {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getBudget() {
+        return budget;
+    }
+
+    public void setBudget(long budget) {
+        this.budget = budget;
+    }
+
+    public long getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(long runtime) {
+        this.runtime = runtime;
     }
 
     public String getTitle() {
@@ -103,6 +124,14 @@ public class Media {
         this.cast = cast;
     }
 
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
     public int getPopularity() {
         return popularity;
     }
@@ -125,6 +154,25 @@ public class Media {
 
     public void setBackImage(String BackdropImage){
         this.BackdropImage = BackdropImage;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        if (director == null){
+            this.director = "Unknown";
+        }
+        this.director = director;
     }
 
     public double getScore() {
