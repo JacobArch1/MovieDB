@@ -1,5 +1,3 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +12,9 @@ public class Media {
     private String BackdropImage;
     private String tagline;
     private String director;
+    private String genres;
     private double score;
     private List<Person> cast = new ArrayList<>();
-    private List<String> genres = new ArrayList<>();
     private boolean isMovie;
 
     int popularity;
@@ -84,17 +82,13 @@ public class Media {
     }
 
     public String getReleaseDate() {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-
-        LocalDate inputDate = LocalDate.parse(releaseDate, inputFormatter);
-
-        String outputDateString = inputDate.format(outputFormatter);
-        return outputDateString;
+        return releaseDate;
     }
 
     public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+        //grab the year from the release date by splitting the string
+        String[] date = releaseDate.split("-");
+        this.releaseDate = date[0];
     }
 
     public String getDescription() {
@@ -124,11 +118,11 @@ public class Media {
         this.cast = cast;
     }
 
-    public List<String> getGenres() {
+    public String getGenres() {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public void setGenres(String genres) {
         this.genres = genres;
     }
 

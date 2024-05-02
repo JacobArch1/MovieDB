@@ -42,7 +42,6 @@
                     <menus>
                       <Menu mnemonicParsing="false">
                            <items>
-                              <MenuItem fx:id="miSettings" mnemonicParsing="false" text="Settings               " />
                               <MenuItem fx:id="miLogout" mnemonicParsing="false" onAction="#miLogoutClicked" text="Logout" />
                            </items>
                            <graphic>

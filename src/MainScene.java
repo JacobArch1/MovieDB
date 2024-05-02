@@ -58,7 +58,7 @@ public class MainScene extends Login{
 
     @FXML
     private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming, 
-    miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout, miSettings;
+    miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout;
 
     Connection con;
     private Stack<AnchorPane> paneStack = new Stack<>();
@@ -183,12 +183,9 @@ public class MainScene extends Login{
         DetailedMediaTitle.setText(media.getTitle());
         MediaOverview.setText(media.getDescription());
         String movieDetails = media.getReleaseDate();
-        if (media.getGenres().size() > 0){ 
+        if (!media.getGenres().equals(null)){ 
             movieDetails += " • ";
-            for(int i = 0; i < media.getGenres().size(); i++){ 
-                if(i > 0) { movieDetails += ", ";}
-                movieDetails += media.getGenres().get(i); 
-            }
+            movieDetails += media.getGenres();
         }
         
         if(media.getRuntime() != 0){ movieDetails += " • " + media.getRuntime() + " mins"; }
@@ -250,7 +247,7 @@ public class MainScene extends Login{
     }
     
     @FXML
-    void miLibMoviesClicked(ActionEvent event) throws SQLException, IOException {
+    void miLibMoviesClicked(ActionEvent event) throws Exception {
         resetScroll();
         showPane(apLibrary);
         Login.user.myMovieLibrary.clear();
@@ -266,7 +263,7 @@ public class MainScene extends Login{
     }
 
     @FXML
-    void miLibTVShowsClicked(ActionEvent event) throws SQLException, IOException {
+    void miLibTVShowsClicked(ActionEvent event) throws Exception {
         resetScroll();
         showPane(apLibrary);
         Login.user.myTVLibrary.clear();
@@ -281,53 +278,45 @@ public class MainScene extends Login{
         renderLibrary(Login.user.myTVLibrary, false);
     }
 
-    public void renderLibrary(List<Media> library, boolean isMovie) throws SQLException, IOException{
+    public void renderLibrary(List<Media> library, boolean isMovie) throws Exception{
         library.clear();
         Login.user.idList.clear();
 
-        String query = "movie";
+        //String query = "movie";
         String table = "user_movie_list";
         String dataID = "movie_id";
         if(isMovie == false){
-            query = "tv";
+            //query = "tv";
             table = "user_tv_list";
             dataID = "tv_id";
         }
 
         Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT " + dataID + " FROM " + table + " WHERE user_id = " + Login.user.getId());
+        ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE user_id = " + Login.user.getId());
         while(rs.next()){
-            Login.user.idList.add(rs.getLong(1));
-        }
-        
-        try {
-            for(int i = 0; i < Login.user.idList.size(); i++){
-                long id = Login.user.idList.get(i);
-                String url = "https://api.themoviedb.org/3/" + query + "/"+ id +"?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
-                String searchResults = connectEndpoint(url);
+            long id = rs.getLong(dataID);
+            String title = rs.getString("title");
+            String releaseDate = rs.getString("release_date");
+            String description = rs.getString("description");
+            String image = rs.getString("image_url");
+            String backdropImage = rs.getString("backdrop_image_url");
+            String tagline = rs.getString("tagline");
+            double score = rs.getDouble("score");
+            long budget = rs.getLong("budget");
+            long runtime = rs.getLong("runtime");
+            String genres = rs.getString("genres");
+            String director = rs.getString("director");
+                    
+            score = rs.getDouble("score");
 
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObject = (JSONObject) parser.parse(searchResults);
-
-                String title = (String) jsonObject.get("title");
-                if (title == null){ title = (String) jsonObject.get("original_name"); }
-                String releaseDate = (String) jsonObject.get("release_date");
-                if (releaseDate == null){ releaseDate = (String) jsonObject.get("first_air_date"); }
-                String description = (String) jsonObject.get("overview");
-                String image = (String) jsonObject.get("poster_path");
-                String BackdropImage = (String) jsonObject.get("backdrop_path");
-                double popularity = (double) jsonObject.get("popularity");
-                Object voteAverage = jsonObject.get("vote_average");
-                double score = 0.0;
-                if(voteAverage instanceof Number){ score = ((Number) voteAverage).doubleValue(); }
-                List <Person> castList = getCredits(id, isMovie);
-
-                Media media = new Media(id, title, releaseDate, description, image, castList, isMovie, BackdropImage, score);
-                media.setPopularity((int)popularity);
-                library.add(media);
-            }
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            List <Person> castList = getCredits(id, isMovie);
+            Media media = new Media(id, title, releaseDate, description, image, castList , isMovie, backdropImage, score);
+            media.setGenres(genres);
+            media.setTagline(tagline);
+            media.setRuntime((int)runtime);
+            media.setBudget(budget);
+            media.setDirector(director);
+            library.add(media);
         }
 
         vbLibrary.getChildren().clear();
@@ -448,7 +437,20 @@ public class MainScene extends Login{
         Long budget = (Long) detailsObject.get("budget");
         if (budget == null){ budget = 0L; }
 
-        media.setGenres(Arrays.asList(genres));
+        String genresString = "";
+        if (genresArray.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < genresArray.size(); i++) {
+                JSONObject genreObject = (JSONObject) genresArray.get(i);
+                String genreName = (String) genreObject.get("name");
+                sb.append(genreName);
+                if (i < genresArray.size() - 1) {
+                    sb.append(", ");
+                }
+            }
+            genresString = "[" + sb.toString() + "]";
+        }
+        media.setGenres(genresString);
         media.setTagline(tagline);
         media.setRuntime(runtime.intValue());
         media.setBudget(budget);
@@ -583,8 +585,26 @@ public class MainScene extends Login{
             data = "movie_id";
         }
 
-        Statement stmt = con.createStatement();
-        stmt.execute("INSERT INTO " + table + " (user_id, " + data + ") VALUES (" + Login.user.getId() + "," + selectedMedia.getId() + ")");
+        String sql = "INSERT INTO " + table + " (user_id, " + data + ", title, release_date, description, image_url, backdrop_image_url, tagline, score, budget, runtime, genres, director) " +
+             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, (int) Login.user.getId());
+            pstmt.setLong(2, selectedMedia.getId());
+            pstmt.setString(3, selectedMedia.getTitle());
+            pstmt.setString(4, selectedMedia.getReleaseDate());
+            pstmt.setString(5, selectedMedia.getDescription());
+            pstmt.setString(6, selectedMedia.getImage());
+            pstmt.setString(7, selectedMedia.getBackImage());
+            pstmt.setString(8, selectedMedia.getTagline());
+            pstmt.setDouble(9, selectedMedia.getScore());
+            pstmt.setLong(10, selectedMedia.getBudget());
+            pstmt.setLong(11, selectedMedia.getRuntime());
+            pstmt.setString(12, selectedMedia.getGenres());
+            pstmt.setString(13, selectedMedia.getDirector());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         btnAddToLibrary.setVisible(false);
         btnRemoveFromLibrary.setVisible(true);
     }
@@ -695,7 +715,7 @@ public class MainScene extends Login{
     }
 
     @FXML
-    void btnBackClicked(ActionEvent event) throws SQLException, IOException {
+    void btnBackClicked(ActionEvent event) throws Exception {
         vbLibrary.getChildren().clear();
         resetScroll();
         if (!paneStack.isEmpty()) {
