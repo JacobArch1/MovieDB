@@ -32,12 +32,6 @@ public class Person {
         this.image = image;
     }
 
-    public Person(String biography, String career, List<Media> knownMedia){
-        this.biography = biography;
-        this.career = career;
-        this.knownMedia = knownMedia;
-    }
-
     public Person(){
         //default
     }

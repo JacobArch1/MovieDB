@@ -129,7 +129,7 @@
                   </ScrollPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="apMovieDetails" prefHeight="313.0" prefWidth="536.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane fx:id="apMovieDetails" prefHeight="313.0" prefWidth="536.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fx:id="ImageBackdrop" fitHeight="455.0" fitWidth="1149.0" opacity="0.4" pickOnBounds="true" />
                   <ImageView fx:id="DetailedMovieImage" fitHeight="250.0" fitWidth="184.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
@@ -213,7 +213,7 @@
                   </ScrollPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="apPersonDetails" prefHeight="313.0" prefWidth="536.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane fx:id="apPersonDetails" prefHeight="313.0" prefWidth="536.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fx:id="DetailedPersonImage" fitHeight="250.0" fitWidth="184.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
                   <Label fx:id="DetailedPersonLabel" alignment="TOP_LEFT" layoutX="198.0" layoutY="14.0" prefHeight="28.0" prefWidth="930.0" style="-fx-text-fill: #90cea1;" text="Person Name Here" textFill="#90cea1" wrapText="true" AnchorPane.rightAnchor="21.0">

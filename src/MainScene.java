@@ -161,27 +161,19 @@ public class MainScene extends Login{
             label1.setStyle("-fx-text-fill: #01b4e4;");
             label1.setWrapText(true);
 
-            VBox vbox = new VBox();
-            vbox.getChildren().addAll(imageView, label1);
-            vbox.setPadding(new Insets(5));
+            Label label2 = new Label(media.getDescription());
+            label2.setFont(Font.font("Calibri", 14));
+            label2.setTextFill(Color.WHITE);
+            label2.setWrapText(true);
 
-            imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    try {
-                        selectedMedia = media;
-                        mediaClicked(event, media);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            VBox vbox = new VBox();
+            vbox.getChildren().addAll(imageView, label1, label2);
+            vbox.setPadding(new Insets(5));
 
             hBox.getChildren().add(vbox);
         }
     }
+    
 
     @FXML
     void mediaClicked(MouseEvent event, Media media) throws SQLException, IOException {
@@ -440,10 +432,60 @@ public class MainScene extends Login{
         person.setBirthday(birthday);
         person.setDeathday(deathday);
 
-        /*url = "api.themoviedb.org/3/person/" + person.getID() + "/tv_credits?api_key=489bc0e902b5137de4ef51427448ad16";
+        url = "api.themoviedb.org/3/person/" + person.getID() + "/tv_credits?api_key=489bc0e902b5137de4ef51427448ad16";
         String creditsResults = connectEndpoint(url);
-        jsonObject = (JSONObject) parser.parse(creditsResults);*/
+        jsonObject = (JSONObject) parser.parse(creditsResults);
+        JSONArray resultsArray = (JSONArray) jsonObject.get("cast");
+        List<Media> knownMedia = new ArrayList<>();
+        for (int i = 0; i < resultsArray.size(); i++) {
+            Media media = new Media();
+            JSONObject movieObject = (JSONObject) resultsArray.get(i);
+            long id = (long) movieObject.get("id");
+            String image = (String) movieObject.get("poster_path");
+            String title = (String) movieObject.get("name");
+            double popularity = (double) movieObject.get("popularity");
+            String character = (String) movieObject.get("character");
 
+            media.setId(id);
+            media.setTitle(title);
+            media.setisMovie(false);
+            media.setPopularity((int)popularity);
+            media.setDescription(character);
+            media.setImage(image);
+
+            knownMedia.add(media);
+        }
+
+        url = "api.themoviedb.org/3/person/" + person.getID() + "/movie_credits?api_key=489bc0e902b5137de4ef51427448ad16";
+        creditsResults = connectEndpoint(url);
+        jsonObject = (JSONObject) parser.parse(creditsResults);
+        resultsArray = (JSONArray) jsonObject.get("cast");
+        for (int i = 0; i < resultsArray.size(); i++) {
+            Media media = new Media();
+            JSONObject movieObject = (JSONObject) resultsArray.get(i);
+            long id = (long) movieObject.get("id");
+            String image = (String) movieObject.get("poster_path");
+            String title = (String) movieObject.get("title");
+            double popularity = (double) movieObject.get("popularity");
+            String character = (String) movieObject.get("character");
+
+            media.setId(id);
+            media.setTitle(title);
+            media.setisMovie(true);
+            media.setPopularity((int)popularity);
+            media.setDescription(character);
+            media.setImage(image);
+
+            knownMedia.add(media);
+        }
+
+        knownMedia = knownMedia.stream().distinct().collect(Collectors.toList());
+        knownMedia.removeIf(media -> media.getDescription().equals("Self"));
+        Collections.sort(knownMedia,Comparator.comparingInt(Media::getPopularity).reversed());
+        if(knownMedia.size() > 10){
+            knownMedia = knownMedia.subList(0, 10);
+        }
+        person.setKnownMedia(knownMedia);
         return person;
     }
 
