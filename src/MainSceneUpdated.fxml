@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="537.0" minWidth="1036.0" prefHeight="748.0" prefWidth="1149.0" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainScene">
    <top>
@@ -132,7 +133,7 @@
                <children>
                   <ImageView fx:id="ImageBackdrop" fitHeight="455.0" fitWidth="1149.0" opacity="0.4" pickOnBounds="true" />
                   <ImageView fx:id="DetailedMovieImage" fitHeight="250.0" fitWidth="184.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
-                  <Button fx:id="btnBack" cancelButton="true" layoutX="1071.0" layoutY="669.0" mnemonicParsing="false" onAction="#btnBackClicked" prefWidth="70.0" text="Back" textFill="WHITE" AnchorPane.bottomAnchor="8.0">
+                  <Button fx:id="btnBack" cancelButton="true" layoutX="1063.0" layoutY="669.0" mnemonicParsing="false" onAction="#btnBackClicked" prefWidth="65.0" text="Back" textFill="WHITE" AnchorPane.bottomAnchor="8.0">
                      <font>
                         <Font name="Segoe UI" size="13.0" />
                      </font>
@@ -195,6 +196,21 @@
                         <Font name="Calibri Bold" size="15.0" />
                      </font>
                   </Label>
+                  <Button fx:id="btnWatchTrailer" layoutX="1063.0" layoutY="325.0" mnemonicParsing="false" onAction="#btnWatchTrailerClicked" prefHeight="30.0" prefWidth="65.0" style="-fx-background-color: #90cea1; -fx-text-fill: #000000;" text="Trailer">
+                     <font>
+                        <Font name="Segoe UI" size="13.0" />
+                     </font>
+                  </Button>
+                  <VBox fx:id="vbTrailerView" layoutX="265.0" layoutY="147.0" prefHeight="370.0" prefWidth="610.0" visible="false">
+                     <children>
+                        <WebView fx:id="wvTrailerPlayer" prefHeight="361.0" prefWidth="610.0" />
+                        <Button fx:id="btnCloseTrailer" mnemonicParsing="false" onAction="#btnCloseTrailerClicked" prefHeight="25.0" prefWidth="637.0" text="X">
+                           <font>
+                              <Font name="Segoe UI" size="13.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="apMenuResults" prefHeight="313.0" prefWidth="536.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

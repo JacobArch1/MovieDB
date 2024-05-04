@@ -24,6 +24,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.web.WebView;
 
 public class MainScene extends Login{
     String mySQLPassword = "pass";
@@ -39,7 +40,7 @@ public class MainScene extends Login{
     public AnchorPane apLibrary, apSearch, apMovieDetails, apMenuResults, apPersonDetails;
 
     @FXML
-    private Button btnSearch, btnAddToLibrary, btnRemoveFromLibrary, btnBack, btnBack2;
+    private Button btnSearch, btnAddToLibrary, btnRemoveFromLibrary, btnBack, btnBack2, btnWatchTrailer, btnCloseTrailer;
 
     @FXML
     private TextField tfSearch;
@@ -51,7 +52,7 @@ public class MainScene extends Login{
     private HBox hbCastList, hbKnownRoles;
 
     @FXML
-    private VBox vbLibrary, vbSearchResults, vbMenuResults;
+    private VBox vbLibrary, vbSearchResults, vbMenuResults, vbTrailerView;
 
     @FXML 
     private ScrollPane spSearch, spLibrary, spCast, spMenu, spRoles; 
@@ -59,6 +60,9 @@ public class MainScene extends Login{
     @FXML
     private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming, 
     miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout;
+
+    @FXML
+    private WebView wvTrailerPlayer;
 
     Connection con;
     private Stack<AnchorPane> paneStack = new Stack<>();
@@ -772,6 +776,8 @@ public class MainScene extends Login{
     }
 
     void showPane(AnchorPane pane) throws SQLException{
+        vbTrailerView.setVisible(false);
+        wvTrailerPlayer.getEngine().load(null);
         if (!paneStack.isEmpty() && paneStack.peek() != pane) {
             paneStack.push(pane);
         }
@@ -798,5 +804,49 @@ public class MainScene extends Login{
             spCast.setHvalue(0);
         }
         spMenu.setVvalue(0);
+    }
+
+    @FXML
+    void btnWatchTrailerClicked(ActionEvent event) throws Exception {
+        String querySTR = "movie";
+        if(selectedMedia.getisMovie() == false){
+            querySTR = "tv";
+        }
+        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + selectedMedia.getId() + "/videos?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String videoResults = connectEndpoint(url);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(videoResults);
+        JSONArray resultsArray = (JSONArray) jsonObject.get("results");
+        //loop through until we find a trailer
+        String key = "";
+        for (int i = 0; i < resultsArray.size(); i++) {
+            JSONObject videoObject = (JSONObject) resultsArray.get(i);
+            String type = (String) videoObject.get("type");
+            if (type.equals("Trailer") && videoObject.get("site").equals("YouTube") && 
+                    videoObject.get("official").equals(true)){
+                key = (String) videoObject.get("key");
+                break;
+            }
+        }
+        if(key.equals("")){
+            for (int i = 0; i < resultsArray.size(); i++) {
+                JSONObject videoObject = (JSONObject) resultsArray.get(i);
+                String type = (String) videoObject.get("type");
+                if (type.equals("Trailer") && videoObject.get("site").equals("YouTube")){
+                    key = (String) videoObject.get("key");
+                    break;
+                }
+            }
+        }
+        String videoURL = "https://www.youtube.com/embed/" + key;
+
+        vbTrailerView.setVisible(true);
+        wvTrailerPlayer.getEngine().load(videoURL);
+    }
+
+    @FXML
+    void btnCloseTrailerClicked(ActionEvent event) {
+        vbTrailerView.setVisible(false);
+        wvTrailerPlayer.getEngine().load(null);
     }
 }
