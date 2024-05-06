@@ -183,7 +183,7 @@
                         <Insets left="20.0" />
                      </padding>
                      <font>
-                        <Font name="Calibri Bold Italic" size="18.0" />
+                        <Font name="Calibri Italic" size="18.0" />
                      </font>
                   </Label>
                   <ScrollPane fx:id="spCast" layoutY="370.0" prefHeight="285.0" prefWidth="1149.0" styleClass="scroll-bar" vbarPolicy="NEVER">

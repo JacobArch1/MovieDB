@@ -540,17 +540,39 @@ public class MainScene extends Login{
         }
 
         knownMedia = knownMedia.stream().distinct().collect(Collectors.toList());
-        knownMedia.removeIf(media -> media.getDescription().equals("Self"));
-        knownMedia.removeIf(media -> media.getDescription().equals("Self - Guest"));
-        knownMedia.removeIf(media -> media.getDescription().equals("Self - Guest Judge"));
-        knownMedia.removeIf(media -> media.getDescription().equals("Guest"));
-        knownMedia.removeIf(media -> media.getDescription().equals("Self - Contestant"));
+        String[] pruneDescriptors = {"", "Self", "Self - Host", "Self - Contestant", "Self - Guest", 
+            "Self - Guest Judge", "Guest", "Self - Cameo (uncredited)", "Self - Special Guest",
+            "Himself", "Herself"};
+        for (int i = knownMedia.size() - 1; i >= 0; i--) {
+            Media media = knownMedia.get(i);
+            if (Arrays.asList(pruneDescriptors).contains(media.getDescription())) {
+                knownMedia.remove(i);
+            }
+        }
+        knownMedia.removeIf(media -> media.getTitle().equals("Saturday Night Live"));
+        knownMedia.removeIf(media -> media.getDescription().contains("(archive footage)"));
+        knownMedia.removeIf(media -> media.getDescription().contains("(uncredited)"));
+        knownMedia.removeIf(media -> media.getDescription().equals(person.getName()));
+        knownMedia = FamilyGuyPrune(knownMedia);
         Collections.sort(knownMedia,Comparator.comparingInt(Media::getPopularity).reversed());
         if(knownMedia.size() > 10){
             knownMedia = knownMedia.subList(0, 10);
         }
         person.setKnownMedia(knownMedia);
         return person;
+    }
+
+    public List<Media> FamilyGuyPrune(List<Media> knownMedia) throws Exception{
+        String[] allowedCast = {"Seth MacFarlane", "Alex Borstein", "Seth Green", "Mila Kunis",
+            "Mike Henry", "Patrick Warburton", "Kevin Michaul Richardson", "Adam West", 
+            "Rachael MacFarlane", "Gary Cole", "John Viener", "Jennifer Tilly", "Arif Zahir"};
+        for (int i = knownMedia.size() - 1; i >= 0; i--){
+            Media media = knownMedia.get(i);
+            if (media.getTitle().equals("FamilyGuy") && !Arrays.asList(allowedCast).contains(media.getDescription())){
+                knownMedia.remove(i);
+            }
+        }
+        return knownMedia;
     }
 
     public static List<Person> getCredits(long id, boolean isMovie) throws Exception{
