@@ -566,10 +566,9 @@ public class MainScene extends Login{
         String[] allowedCast = {"Seth MacFarlane", "Alex Borstein", "Seth Green", "Mila Kunis",
             "Mike Henry", "Patrick Warburton", "Kevin Michaul Richardson", "Adam West", 
             "Rachael MacFarlane", "Gary Cole", "John Viener", "Jennifer Tilly", "Arif Zahir"};
-        for (int i = knownMedia.size() - 1; i >= 0; i--){
-            Media media = knownMedia.get(i);
-            if (media.getTitle().equals("FamilyGuy") && !Arrays.asList(allowedCast).contains(media.getDescription())){
-                knownMedia.remove(i);
+        for (Media media : knownMedia){
+            if (media.getTitle().equals("Family Guy") && !Arrays.asList(allowedCast).contains(media.getDescription())) {
+                knownMedia.remove(media);
             }
         }
         return knownMedia;
