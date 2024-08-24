@@ -26,12 +26,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
 
-public class MainScene extends Login{
+public class MainScene extends Login {
     String mySQLPassword = "pass";
 
     @FXML
-    private Label DetailedMediaTitle, MediaOverview, MediaInfo, lblMenuTitle, lblLibraryTitle, DetailedPersonLabel, 
-    PersonOverview, lblKnownFor, lblBdayDday, lblTagline, lblDirandBud;
+    private Label DetailedMediaTitle, MediaOverview, MediaInfo, lblMenuTitle, lblLibraryTitle, DetailedPersonLabel,
+            PersonOverview, lblKnownFor, lblBdayDday, lblTagline, lblDirandBud;
 
     @FXML
     private ImageView DetailedMovieImage, ImageBackdrop, DetailedPersonImage;
@@ -40,7 +40,8 @@ public class MainScene extends Login{
     public AnchorPane apLibrary, apSearch, apMovieDetails, apMenuResults, apPersonDetails;
 
     @FXML
-    private Button btnSearch, btnAddToLibrary, btnRemoveFromLibrary, btnBack, btnBack2, btnWatchTrailer, btnCloseTrailer;
+    private Button btnSearch, btnAddToLibrary, btnRemoveFromLibrary, btnBack, btnBack2, btnWatchTrailer,
+            btnCloseTrailer;
 
     @FXML
     private TextField tfSearch;
@@ -54,12 +55,12 @@ public class MainScene extends Login{
     @FXML
     private VBox vbLibrary, vbSearchResults, vbMenuResults, vbTrailerView;
 
-    @FXML 
-    private ScrollPane spSearch, spLibrary, spCast, spMenu, spRoles; 
+    @FXML
+    private ScrollPane spSearch, spLibrary, spCast, spMenu, spRoles;
 
     @FXML
-    private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming, 
-    miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout;
+    private MenuItem miMoviesNowPlaying, miMoviesPopular, miMoviesTopRated, miMoviesUpcoming,
+            miTVAiringToday, miTVOnTv, miTVPopular, miTVTopRated, miLibTVShows, miLibMovies, miLogout;
 
     @FXML
     private WebView wvTrailerPlayer;
@@ -82,7 +83,8 @@ public class MainScene extends Login{
         menuShowing = "MovPN";
         menuisMovie = true;
         try {
-            renderMenuResults( "https://api.themoviedb.org/3/movie/now_playing?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+            renderMenuResults(
+                    "https://api.themoviedb.org/3/movie/now_playing?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
@@ -90,28 +92,28 @@ public class MainScene extends Login{
 
     public void addMovies(VBox vBox, List<Media> list) throws IOException {
         final int moviesPerRow = 6;
-        
+
         HBox currentHBox = new HBox();
         vBox.getChildren().add(currentHBox);
-    
+
         for (int i = 0; i < list.size(); i++) {
             Media media = list.get(i);
-    
+
             ImageView imageView = new ImageView(media.getImage());
             imageView.setFitWidth(175);
             imageView.setFitHeight(269);
             imageView.setCursor(Cursor.HAND);
-    
+
             Label label = new Label(media.getTitle());
             label.setFont(Font.font("Calibri", FontWeight.BOLD, 15));
             label.setStyle("-fx-text-fill: #01b4e4;");
             label.setMaxWidth(150);
             label.setWrapText(true);
-            
+
             VBox vbox = new VBox();
             vbox.getChildren().addAll(imageView, label);
             vbox.setPadding(new Insets(5));
-    
+
             imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
@@ -125,7 +127,7 @@ public class MainScene extends Login{
                     }
                 }
             });
-    
+
             currentHBox.getChildren().add(vbox);
 
             if ((i + 1) % moviesPerRow == 0 && i + 1 < list.size()) {
@@ -136,7 +138,7 @@ public class MainScene extends Login{
     }
 
     @FXML
-    void personClicked(MouseEvent event, Person person) throws Exception{
+    void personClicked(MouseEvent event, Person person) throws Exception {
         getPersonInfo(person);
         showPane(apPersonDetails);
         resetScroll();
@@ -153,8 +155,8 @@ public class MainScene extends Login{
         addKnownRoles(hbKnownRoles, person.getKnownMedia());
     }
 
-    public void addKnownRoles(HBox hBox, List<Media> knownRoles) throws IOException{
-        for (int i = 0; i < knownRoles.size(); i++){
+    public void addKnownRoles(HBox hBox, List<Media> knownRoles) throws IOException {
+        for (int i = 0; i < knownRoles.size(); i++) {
             Media media = knownRoles.get(i);
 
             ImageView imageView = new ImageView(media.getImage());
@@ -177,7 +179,7 @@ public class MainScene extends Login{
             hBox.getChildren().add(vbox);
         }
     }
-    
+
     @FXML
     void mediaClicked(MouseEvent event, Media media) throws SQLException, IOException {
         showPane(apMovieDetails);
@@ -187,32 +189,34 @@ public class MainScene extends Login{
         DetailedMediaTitle.setText(media.getTitle());
         MediaOverview.setText(media.getDescription());
         String movieDetails = media.getReleaseDate();
-        if (!media.getGenres().equals(null)){ 
+        if (!media.getGenres().equals(null)) {
             movieDetails += " • ";
             movieDetails += media.getGenres();
         }
-        
-        if(media.getRuntime() != 0){ movieDetails += " • " + media.getRuntime() + " mins"; }
-        
-        MediaInfo.setText(movieDetails); 
+
+        if (media.getRuntime() != 0) {
+            movieDetails += " • " + media.getRuntime() + " mins";
+        }
+
+        MediaInfo.setText(movieDetails);
         lblTagline.setText(media.getTagline());
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         String formattedBudget = currencyFormat.format(media.getBudget());
         lblDirandBud.setText("Director: " + media.getDirector() + "\nBudget: " + formattedBudget);
-        
+
         Image image = new Image(media.getImage());
         DetailedMovieImage.setImage(image);
         Image backImage = new Image(media.getBackImage());
         ImageBackdrop.setImage(backImage);
-        pbUserScore.setProgress(media.getScore()/10);
+        pbUserScore.setProgress(media.getScore() / 10);
 
         hbCastList.getChildren().clear();
         addCastList(hbCastList, media.getCast());
         ShowButton();
     }
 
-    public void addCastList(HBox hBox, List<Person> castList) throws IOException{
-        for (int i = 0; i < castList.size(); i++){
+    public void addCastList(HBox hBox, List<Person> castList) throws IOException {
+        for (int i = 0; i < castList.size(); i++) {
             Person person = castList.get(i);
 
             ImageView imageView = new ImageView(person.getImage());
@@ -239,8 +243,7 @@ public class MainScene extends Login{
                     try {
                         selectedPerson = person;
                         personClicked(event, selectedPerson);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -249,7 +252,7 @@ public class MainScene extends Login{
             hBox.getChildren().add(vbox);
         }
     }
-    
+
     @FXML
     void miLibMoviesClicked(ActionEvent event) throws Exception {
         resetScroll();
@@ -282,20 +285,20 @@ public class MainScene extends Login{
         renderLibrary(Login.user.myTVLibrary, false);
     }
 
-    public void renderLibrary(List<Media> library, boolean isMovie) throws Exception{
+    public void renderLibrary(List<Media> library, boolean isMovie) throws Exception {
         library.clear();
         Login.user.idList.clear();
 
         String table = "user_movie_list";
         String dataID = "movie_id";
-        if(isMovie == false){
+        if (isMovie == false) {
             table = "user_tv_list";
             dataID = "tv_id";
         }
 
         Statement stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE user_id = " + Login.user.getId());
-        while(rs.next()){
+        while (rs.next()) {
             long id = rs.getLong(dataID);
             String title = rs.getString("title");
             String releaseDate = rs.getString("release_date");
@@ -308,14 +311,15 @@ public class MainScene extends Login{
             long runtime = rs.getLong("runtime");
             String genres = rs.getString("genres");
             String director = rs.getString("director");
-                    
+
             score = rs.getDouble("score");
 
-            List <Person> castList = getCredits(id, isMovie);
-            Media media = new Media(id, title, releaseDate, description, image, castList , isMovie, backdropImage, score);
+            List<Person> castList = getCredits(id, isMovie);
+            Media media = new Media(id, title, releaseDate, description, image, castList, isMovie, backdropImage,
+                    score);
             media.setGenres(genres);
             media.setTagline(tagline);
-            media.setRuntime((int)runtime);
+            media.setRuntime((int) runtime);
             media.setBudget(budget);
             media.setDirector(director);
             library.add(media);
@@ -325,44 +329,47 @@ public class MainScene extends Login{
         addMovies(vbLibrary, library);
     }
 
-    void search() throws IOException, SQLException{
+    void search() throws IOException, SQLException {
         resetScroll();
         showPane(apSearch);
         btnAddToLibrary.setVisible(false);
         btnRemoveFromLibrary.setVisible(false);
         menuShowing = "";
-        
+
         movieSearchResultsList.clear();
         tvSearchResultsList.clear();
 
         String query = tfSearch.getText();
-        if (!query.equals("")){
+        if (!query.equals("")) {
             try {
-                query = query.replace(" ","%20");
+                query = query.replace(" ", "%20");
 
-                String url = "https://api.themoviedb.org/3/search/tv?api_key=489bc0e902b5137de4ef51427448ad16&language=en&query=" + query;
+                String url = "https://api.themoviedb.org/3/search/tv?api_key=489bc0e902b5137de4ef51427448ad16&language=en&query="
+                        + query;
                 String searchResults = connectEndpoint(url);
                 getData(searchResults, tvSearchResultsList, false);
 
-                url = "https://api.themoviedb.org/3/search/movie?api_key=489bc0e902b5137de4ef51427448ad16&language=en-US&query=" + query;
+                url = "https://api.themoviedb.org/3/search/movie?api_key=489bc0e902b5137de4ef51427448ad16&language=en-US&query="
+                        + query;
                 searchResults = connectEndpoint(url);
                 getData(searchResults, movieSearchResultsList, true);
-                
+
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
             }
         }
         vbSearchResults.getChildren().clear();
-        List<Media> SearchList = Stream.concat(movieSearchResultsList.stream(), tvSearchResultsList.stream()).collect(Collectors.toList());
-        Collections.sort(SearchList,Comparator.comparingInt(Media::getPopularity).reversed());
+        List<Media> SearchList = Stream.concat(movieSearchResultsList.stream(), tvSearchResultsList.stream())
+                .collect(Collectors.toList());
+        Collections.sort(SearchList, Comparator.comparingInt(Media::getPopularity).reversed());
         addMovies(vbSearchResults, SearchList);
     }
-    
-    public static String connectEndpoint(String urlString) throws Exception{
+
+    public static String connectEndpoint(String urlString) throws Exception {
         if (!urlString.startsWith("http://") && !urlString.startsWith("https://")) {
             urlString = "https://" + urlString;
         }
-    
+
         @SuppressWarnings("deprecation")
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -386,42 +393,52 @@ public class MainScene extends Login{
         }
     }
 
-    public static void getData(String jsonString, List<Media> list, boolean isMovie) throws Exception{
+    public static void getData(String jsonString, List<Media> list, boolean isMovie) throws Exception {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
         JSONArray resultsArray = (JSONArray) jsonObject.get("results");
-        
+
         for (int i = 0; i < resultsArray.size(); i++) {
             JSONObject movieObject = (JSONObject) resultsArray.get(i);
 
             long id = (long) movieObject.get("id");
             String title = (String) movieObject.get("title");
-            if (title == null){ title = (String) movieObject.get("original_name");}
+            if (title == null) {
+                title = (String) movieObject.get("original_name");
+            }
             String releaseDate = (String) movieObject.get("release_date");
-            if (releaseDate == null){ releaseDate = (String) movieObject.get("first_air_date");}
+            if (releaseDate == null) {
+                releaseDate = (String) movieObject.get("first_air_date");
+            }
             String description = (String) movieObject.get("overview");
-            if(description == null){description = "No Description Available.";}
+            if (description == null) {
+                description = "No Description Available.";
+            }
             String image = (String) movieObject.get("poster_path");
             String BackdropImage = (String) movieObject.get("backdrop_path");
             double popularity = (double) movieObject.get("popularity");
             Object voteAverage = movieObject.get("vote_average");
             double score = 0.0;
-            if(voteAverage instanceof Number){ score = ((Number) voteAverage).doubleValue(); }
+            if (voteAverage instanceof Number) {
+                score = ((Number) voteAverage).doubleValue();
+            }
             List<Person> castList = getCredits(id, isMovie);
 
-            Media media = new Media(id, title, releaseDate, description, image, castList, isMovie, BackdropImage, score);
-            media.setPopularity((int)popularity);
+            Media media = new Media(id, title, releaseDate, description, image, castList, isMovie, BackdropImage,
+                    score);
+            media.setPopularity((int) popularity);
             getExtraData(media);
             list.add(media);
         }
     }
 
-    public static void getExtraData(Media media)throws Exception{
+    public static void getExtraData(Media media) throws Exception {
         String querySTR = "movie";
-        if(media.getisMovie() == false){
+        if (media.getisMovie() == false) {
             querySTR = "tv";
         }
-        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId() + "?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId()
+                + "?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
         String extraDetails = connectEndpoint(url);
         JSONParser detailsResults = new JSONParser();
         JSONObject detailsObject = (JSONObject) detailsResults.parse(extraDetails);
@@ -433,11 +450,17 @@ public class MainScene extends Login{
             genres[i] = (String) genreObject.get("name");
         }
         String tagline = (String) detailsObject.get("tagline");
-        if (tagline == null){ tagline = "No Tagline Available."; }
+        if (tagline == null) {
+            tagline = "No Tagline Available.";
+        }
         Long runtime = (Long) detailsObject.get("runtime");
-        if (runtime == null){ runtime = 0L; }
+        if (runtime == null) {
+            runtime = 0L;
+        }
         Long budget = (Long) detailsObject.get("budget");
-        if (budget == null){ budget = 0L; }
+        if (budget == null) {
+            budget = 0L;
+        }
 
         String genresString = "";
         if (genresArray.size() > 0) {
@@ -457,7 +480,8 @@ public class MainScene extends Login{
         media.setRuntime(runtime.intValue());
         media.setBudget(budget);
 
-        url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId() + "/credits?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        url = "https://api.themoviedb.org/3/" + querySTR + "/" + media.getId()
+                + "/credits?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
         String credits = connectEndpoint(url);
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(credits);
@@ -466,15 +490,16 @@ public class MainScene extends Login{
             JSONObject movieObject = (JSONObject) resultsArray.get(i);
             String job = (String) movieObject.get("job");
             String name = (String) movieObject.get("name");
-            if(job.equals("Director")){
+            if (job.equals("Director")) {
                 media.setDirector(name);
                 break;
             }
         }
     }
 
-    public Person getPersonInfo(Person person) throws Exception{
-        String url = "https://api.themoviedb.org/3/person/" + person.getID() + "?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+    public Person getPersonInfo(Person person) throws Exception {
+        String url = "https://api.themoviedb.org/3/person/" + person.getID()
+                + "?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
         String personResults = connectEndpoint(url);
 
         JSONParser parser = new JSONParser();
@@ -483,9 +508,13 @@ public class MainScene extends Login{
         String biography = (String) jsonObject.get("biography");
         String career = (String) jsonObject.get("known_for_department");
         String birthday = (String) jsonObject.get("birthday");
-        if(birthday == null){ birthday = "Null"; }
+        if (birthday == null) {
+            birthday = "Null";
+        }
         String deathday = (String) jsonObject.get("deathday");
-        if(deathday == null){ deathday = "Null"; }
+        if (deathday == null) {
+            deathday = "Null";
+        }
 
         person.setBiography(biography);
         person.setCareer(career);
@@ -509,14 +538,15 @@ public class MainScene extends Login{
             media.setId(id);
             media.setTitle(title);
             media.setisMovie(false);
-            media.setPopularity((int)popularity);
+            media.setPopularity((int) popularity);
             media.setDescription(character);
             media.setImage(image);
 
             knownMedia.add(media);
         }
 
-        url = "api.themoviedb.org/3/person/" + person.getID() + "/movie_credits?api_key=489bc0e902b5137de4ef51427448ad16";
+        url = "api.themoviedb.org/3/person/" + person.getID()
+                + "/movie_credits?api_key=489bc0e902b5137de4ef51427448ad16";
         creditsResults = connectEndpoint(url);
         jsonObject = (JSONObject) parser.parse(creditsResults);
         resultsArray = (JSONArray) jsonObject.get("cast");
@@ -532,7 +562,7 @@ public class MainScene extends Login{
             media.setId(id);
             media.setTitle(title);
             media.setisMovie(true);
-            media.setPopularity((int)popularity);
+            media.setPopularity((int) popularity);
             media.setDescription(character);
             media.setImage(image);
 
@@ -540,9 +570,9 @@ public class MainScene extends Login{
         }
 
         knownMedia = knownMedia.stream().distinct().collect(Collectors.toList());
-        String[] pruneDescriptors = {"", "Self", "Self - Host", "Self - Contestant", "Self - Guest", 
-            "Self - Guest Judge", "Guest", "Self - Cameo (uncredited)", "Self - Special Guest",
-            "Himself", "Herself"};
+        String[] pruneDescriptors = { "", "Self", "Self - Host", "Self - Contestant", "Self - Guest",
+                "Self - Guest Judge", "Guest", "Self - Cameo (uncredited)", "Self - Special Guest",
+                "Himself", "Herself" };
         for (int i = knownMedia.size() - 1; i >= 0; i--) {
             Media media = knownMedia.get(i);
             if (Arrays.asList(pruneDescriptors).contains(media.getDescription())) {
@@ -553,33 +583,39 @@ public class MainScene extends Login{
         knownMedia.removeIf(media -> media.getDescription().contains("(archive footage)"));
         knownMedia.removeIf(media -> media.getDescription().contains("(uncredited)"));
         knownMedia.removeIf(media -> media.getDescription().equals(person.getName()));
-        knownMedia = FamilyGuyPrune(knownMedia);
-        Collections.sort(knownMedia,Comparator.comparingInt(Media::getPopularity).reversed());
-        if(knownMedia.size() > 10){
+        // knownMedia = FamilyGuyPrune(knownMedia);
+        Collections.sort(knownMedia, Comparator.comparingInt(Media::getPopularity).reversed());
+        if (knownMedia.size() > 10) {
             knownMedia = knownMedia.subList(0, 10);
         }
         person.setKnownMedia(knownMedia);
         return person;
     }
 
-    public List<Media> FamilyGuyPrune(List<Media> knownMedia) throws Exception{
-        String[] allowedCast = {"Seth MacFarlane", "Alex Borstein", "Seth Green", "Mila Kunis",
-            "Mike Henry", "Patrick Warburton", "Kevin Michaul Richardson", "Adam West", 
-            "Rachael MacFarlane", "Gary Cole", "John Viener", "Jennifer Tilly", "Arif Zahir"};
-        for (Media media : knownMedia){
-            if (media.getTitle().equals("Family Guy") && !Arrays.asList(allowedCast).contains(media.getDescription())) {
-                knownMedia.remove(media);
-            }
-        }
-        return knownMedia;
-    }
+    /*
+     * public List<Media> FamilyGuyPrune(List<Media> knownMedia) throws Exception{
+     * String[] allowedCast = {"Seth MacFarlane", "Alex Borstein", "Seth Green",
+     * "Mila Kunis",
+     * "Mike Henry", "Patrick Warburton", "Kevin Michaul Richardson", "Adam West",
+     * "Rachael MacFarlane", "Gary Cole", "John Viener", "Jennifer Tilly",
+     * "Arif Zahir"};
+     * for (Media media : knownMedia){
+     * if (media.getTitle().equals("Family Guy") &&
+     * !Arrays.asList(allowedCast).contains(media.getDescription())) {
+     * knownMedia.remove(media);
+     * }
+     * }
+     * return knownMedia;
+     * }
+     */
 
-    public static List<Person> getCredits(long id, boolean isMovie) throws Exception{
+    public static List<Person> getCredits(long id, boolean isMovie) throws Exception {
         String querySTR = "movie";
-        if(isMovie == false){
+        if (isMovie == false) {
             querySTR = "tv";
         }
-        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + id + "/credits?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + id
+                + "/credits?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
         String credits = connectEndpoint(url);
 
         JSONParser parser = new JSONParser();
@@ -603,13 +639,15 @@ public class MainScene extends Login{
     void btnAddClicked() throws SQLException {
         String table = "user_tv_list";
         String data = "tv_id";
-        if (selectedMedia.getisMovie() == true){
+        if (selectedMedia.getisMovie() == true) {
             table = "user_movie_list";
             data = "movie_id";
         }
 
-        String sql = "INSERT INTO " + table + " (user_id, " + data + ", title, release_date, description, image_url, backdrop_image_url, tagline, score, budget, runtime, genres, director) " +
-             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO " + table + " (user_id, " + data
+                + ", title, release_date, description, image_url, backdrop_image_url, tagline, score, budget, runtime, genres, director) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, (int) Login.user.getId());
             pstmt.setLong(2, selectedMedia.getId());
@@ -633,16 +671,17 @@ public class MainScene extends Login{
     }
 
     @FXML
-    void btnRemoveClicked() throws SQLException{
+    void btnRemoveClicked() throws SQLException {
         String table = "user_tv_list";
         String data = "tv_id";
-        if (selectedMedia.getisMovie() == true){
+        if (selectedMedia.getisMovie() == true) {
             table = "user_movie_list";
             data = "movie_id";
         }
 
         Statement stmt = con.createStatement();
-        stmt.execute("DELETE FROM " + table + " WHERE user_id = (" + Login.user.getId() + ") AND " + data + " = " + selectedMedia.getId());
+        stmt.execute("DELETE FROM " + table + " WHERE user_id = (" + Login.user.getId() + ") AND " + data + " = "
+                + selectedMedia.getId());
         btnRemoveFromLibrary.setVisible(false);
         btnAddToLibrary.setVisible(true);
         Login.user.myMovieLibrary.clear();
@@ -650,7 +689,7 @@ public class MainScene extends Login{
         Login.user.idList.clear();
     }
 
-    void renderMenuResults(String url) throws Exception{
+    void renderMenuResults(String url) throws Exception {
         showPane(apMenuResults);
         resetScroll();
         btnRemoveFromLibrary.setVisible(false);
@@ -659,71 +698,71 @@ public class MainScene extends Login{
         String searchResults = connectEndpoint(url);
         getData(searchResults, menuResultsList, menuisMovie);
         vbMenuResults.getChildren().clear();
-        Collections.sort(menuResultsList,Comparator.comparingInt(Media::getPopularity).reversed());
+        Collections.sort(menuResultsList, Comparator.comparingInt(Media::getPopularity).reversed());
         addMovies(vbMenuResults, menuResultsList);
     }
 
     @FXML
     void miMoviesNowPlayingClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "MovPN"){
-            setMenu("Movies Playing Now", "MovPN", true, 
-            "https://api.themoviedb.org/3/movie/now_playing?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "MovPN") {
+            setMenu("Movies Playing Now", "MovPN", true,
+                    "https://api.themoviedb.org/3/movie/now_playing?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miMoviesPopularClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "MovPop"){
-            setMenu("Popular Movies", "MovPop", true, 
-            "https://api.themoviedb.org/3/movie/popular?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "MovPop") {
+            setMenu("Popular Movies", "MovPop", true,
+                    "https://api.themoviedb.org/3/movie/popular?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miMoviesTopRatedClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "MovTR"){
-            setMenu("Top Rated Movies", "MovTR", true, 
-            "https://api.themoviedb.org/3/movie/top_rated?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "MovTR") {
+            setMenu("Top Rated Movies", "MovTR", true,
+                    "https://api.themoviedb.org/3/movie/top_rated?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miMoviesUpcomingClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "MovUPC"){
-            setMenu("Upcoming Movies", "MovUPC", true, 
-            "https://api.themoviedb.org/3/movie/upcoming?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "MovUPC") {
+            setMenu("Upcoming Movies", "MovUPC", true,
+                    "https://api.themoviedb.org/3/movie/upcoming?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miTVAiringTodayClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "TvAirTod"){
-            setMenu("TV Shows Airing Today", "TvAirTod", false, 
-            "https://api.themoviedb.org/3/tv/airing_today?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "TvAirTod") {
+            setMenu("TV Shows Airing Today", "TvAirTod", false,
+                    "https://api.themoviedb.org/3/tv/airing_today?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miTVOnTvClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "TvOnTod"){
-            setMenu("TV Shows Airing This Week", "TvOnTod", false, 
-            "https://api.themoviedb.org/3/tv/on_the_air?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "TvOnTod") {
+            setMenu("TV Shows Airing This Week", "TvOnTod", false,
+                    "https://api.themoviedb.org/3/tv/on_the_air?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miTVPopularClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "TvPop"){
-            setMenu("Popular TV Shows", "TvPop", false, 
-            "https://api.themoviedb.org/3/tv/popular?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "TvPop") {
+            setMenu("Popular TV Shows", "TvPop", false,
+                    "https://api.themoviedb.org/3/tv/popular?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
     @FXML
     void miTVTopRatedClicked(ActionEvent event) throws Exception {
-        if (menuShowing != "TvTopRated"){
-            setMenu("Top Rated TV Shows", "TvTopRated", false, 
-            "https://api.themoviedb.org/3/tv/top_rated?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
+        if (menuShowing != "TvTopRated") {
+            setMenu("Top Rated TV Shows", "TvTopRated", false,
+                    "https://api.themoviedb.org/3/tv/top_rated?api_key=489bc0e902b5137de4ef51427448ad16&language=en");
         }
     }
 
@@ -733,7 +772,7 @@ public class MainScene extends Login{
     }
 
     @FXML
-    void btnSearchClicked(MouseEvent  event) throws IOException, SQLException {
+    void btnSearchClicked(MouseEvent event) throws IOException, SQLException {
         search();
     }
 
@@ -747,7 +786,7 @@ public class MainScene extends Login{
         if (!paneStack.isEmpty()) {
             AnchorPane previousPane = paneStack.peek();
             showPane(previousPane);
-            
+
             if (previousPane == apLibrary) {
                 if (!tvLibrary) {
                     renderLibrary(Login.user.myMovieLibrary, true);
@@ -777,7 +816,7 @@ public class MainScene extends Login{
     void ShowButton() throws SQLException {
         String table = "user_movie_list";
         String dataID = "movie_id";
-        if(selectedMedia.getisMovie() == false){
+        if (selectedMedia.getisMovie() == false) {
             table = "user_tv_list";
             dataID = "tv_id";
         }
@@ -787,41 +826,42 @@ public class MainScene extends Login{
 
         Statement stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery("Select * From " + table + " Where user_id = " + Login.user.getId()
-            + " AND " + dataID + " = " + selectedMedia.getId());
-        if(rs.next()){
+                + " AND " + dataID + " = " + selectedMedia.getId());
+        if (rs.next()) {
             btnRemoveFromLibrary.setVisible(true);
-        }
-        else{
+        } else {
             btnAddToLibrary.setVisible(true);
         }
     }
 
-    void showPane(AnchorPane pane) throws SQLException{
+    void showPane(AnchorPane pane) throws SQLException {
         vbTrailerView.setVisible(false);
         wvTrailerPlayer.getEngine().load(null);
         if (!paneStack.isEmpty() && paneStack.peek() != pane) {
             paneStack.push(pane);
         }
-        apLibrary.setVisible(false); 
-        apSearch.setVisible(false); 
+        apLibrary.setVisible(false);
+        apSearch.setVisible(false);
         apMovieDetails.setVisible(false);
-        apMenuResults.setVisible(false); 
-        if(pane == apMovieDetails){ShowButton();}
+        apMenuResults.setVisible(false);
+        if (pane == apMovieDetails) {
+            ShowButton();
+        }
         apPersonDetails.setVisible(false);
         pane.setVisible(true);
     }
 
-    void setMenu(String title, String MenuShowing, boolean isMovie, String link) throws Exception{
+    void setMenu(String title, String MenuShowing, boolean isMovie, String link) throws Exception {
         lblMenuTitle.setText(title);
         menuShowing = MenuShowing;
         menuisMovie = isMovie;
         renderMenuResults(link);
     }
 
-    void resetScroll(){
+    void resetScroll() {
         spSearch.setVvalue(0);
         spLibrary.setVvalue(0);
-        if(paneStack.lastElement() != apPersonDetails){
+        if (paneStack.lastElement() != apPersonDetails) {
             spCast.setHvalue(0);
         }
         spMenu.setVvalue(0);
@@ -830,30 +870,31 @@ public class MainScene extends Login{
     @FXML
     void btnWatchTrailerClicked(ActionEvent event) throws Exception {
         String querySTR = "movie";
-        if(selectedMedia.getisMovie() == false){
+        if (selectedMedia.getisMovie() == false) {
             querySTR = "tv";
         }
-        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + selectedMedia.getId() + "/videos?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
+        String url = "https://api.themoviedb.org/3/" + querySTR + "/" + selectedMedia.getId()
+                + "/videos?api_key=489bc0e902b5137de4ef51427448ad16&language=en";
         String videoResults = connectEndpoint(url);
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(videoResults);
         JSONArray resultsArray = (JSONArray) jsonObject.get("results");
-        //loop through until we find a trailer
+        // loop through until we find a trailer
         String key = "";
         for (int i = 0; i < resultsArray.size(); i++) {
             JSONObject videoObject = (JSONObject) resultsArray.get(i);
             String type = (String) videoObject.get("type");
-            if (type.equals("Trailer") && videoObject.get("site").equals("YouTube") && 
-                    videoObject.get("official").equals(true)){
+            if (type.equals("Trailer") && videoObject.get("site").equals("YouTube") &&
+                    videoObject.get("official").equals(true)) {
                 key = (String) videoObject.get("key");
                 break;
             }
         }
-        if(key.equals("")){
+        if (key.equals("")) {
             for (int i = 0; i < resultsArray.size(); i++) {
                 JSONObject videoObject = (JSONObject) resultsArray.get(i);
                 String type = (String) videoObject.get("type");
-                if (type.equals("Trailer") && videoObject.get("site").equals("YouTube")){
+                if (type.equals("Trailer") && videoObject.get("site").equals("YouTube")) {
                     key = (String) videoObject.get("key");
                     break;
                 }

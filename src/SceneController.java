@@ -11,7 +11,7 @@ public class SceneController {
     private Stage stg;
     private Scene scn;
 
-    public void SwitchScenes(ActionEvent event, String fxml) throws IOException{
+    public void SwitchScenes(ActionEvent event, String fxml) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource(fxml));
 
         if (event.getSource() instanceof MenuItem) {

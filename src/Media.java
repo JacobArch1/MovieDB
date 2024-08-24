@@ -19,7 +19,8 @@ public class Media {
 
     int popularity;
 
-    public Media(long id, String title, String releaseDate, String description, String image, List<Person> cast, boolean isMovie, String BackdropImage, double score) {
+    public Media(long id, String title, String releaseDate, String description, String image, List<Person> cast,
+            boolean isMovie, String BackdropImage, double score) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -38,7 +39,7 @@ public class Media {
         this.BackdropImage = BackdropImage;
     }
 
-    public Media(long id, String title, String image, boolean isMovie){
+    public Media(long id, String title, String image, boolean isMovie) {
         this.id = id;
         this.title = title;
         this.Image = image;
@@ -46,7 +47,7 @@ public class Media {
     }
 
     public Media() {
-        //default
+        // default
     }
 
     public long getId() {
@@ -86,7 +87,7 @@ public class Media {
     }
 
     public void setReleaseDate(String releaseDate) {
-        //grab the year from the release date by splitting the string
+        // grab the year from the release date by splitting the string
         String[] date = releaseDate.split("-");
         this.releaseDate = date[0];
     }
@@ -99,8 +100,8 @@ public class Media {
         this.description = description;
     }
 
-    public String getImage()  { 
-        if(this.Image == null || this.Image.trim().isEmpty()){
+    public String getImage() {
+        if (this.Image == null || this.Image.trim().isEmpty()) {
             return "NoImageMedia.png";
         }
         return "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + Image;
@@ -134,19 +135,19 @@ public class Media {
         this.popularity = popularity;
     }
 
-    public boolean getisMovie(){
+    public boolean getisMovie() {
         return isMovie;
     }
-    
-    public void setisMovie(boolean isMovie){
+
+    public void setisMovie(boolean isMovie) {
         this.isMovie = isMovie;
     }
 
-    public String getBackImage(){
+    public String getBackImage() {
         return "https://media.themoviedb.org/t/p/w1920_and_h800_multi_faces/" + BackdropImage;
     }
 
-    public void setBackImage(String BackdropImage){
+    public void setBackImage(String BackdropImage) {
         this.BackdropImage = BackdropImage;
     }
 
@@ -163,7 +164,7 @@ public class Media {
     }
 
     public void setDirector(String director) {
-        if (director == null){
+        if (director == null) {
             this.director = "Unknown";
         }
         this.director = director;

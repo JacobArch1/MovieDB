@@ -25,22 +25,22 @@ public class Person {
         this.career = career;
     }
 
-    public Person(long id, String name, String character, String image){
+    public Person(long id, String name, String character, String image) {
         this.id = id;
         this.name = name;
         this.character = character;
         this.image = image;
     }
 
-    public Person(){
-        //default
+    public Person() {
+        // default
     }
 
     public long getID() {
         return id;
     }
 
-    public void setID(long id){
+    public void setID(long id) {
         this.id = id;
     }
 
@@ -61,7 +61,7 @@ public class Person {
     }
 
     public String getImage() {
-        if(this.image == null || this.image.trim().isEmpty()){
+        if (this.image == null || this.image.trim().isEmpty()) {
             return "NoImagePerson.png";
         }
         return "https://image.tmdb.org/t/p/w500/" + image;
@@ -100,14 +100,15 @@ public class Person {
     }
 
     public void setBirthday(String birthday) throws ParseException {
-        if(!birthday.equals("Null")){
+        if (!birthday.equals("Null")) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date;
             date = dateFormat.parse(birthday);
             SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
             this.birthday = yearFormat.format(date);
+        } else {
+            this.birthday = "Unknown";
         }
-        else{ this.birthday = "Unknown"; }
     }
 
     public String getDeathday() {
@@ -115,14 +116,16 @@ public class Person {
     }
 
     public void setDeathday(String deathday) throws ParseException {
-        if(!deathday.equals("Null")){
+        if (!deathday.equals("Null")) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date;
             date = dateFormat.parse(deathday);
             SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
             this.deathday = yearFormat.format(date);
+        } else if (this.birthday.equals("Unknown")) {
+            this.deathday = "Unknown";
+        } else {
+            this.deathday = "Today";
         }
-        else if(this.birthday.equals("Unknown")){ this.deathday = "Unknown"; }
-        else{ this.deathday = "Today"; }
     }
 }

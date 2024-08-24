@@ -15,7 +15,7 @@ public class User {
     }
 
     public User() {
-        //default
+        // default
     }
 
     public String getUsername() {
